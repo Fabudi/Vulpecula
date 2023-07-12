@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">Vulpecula</string>
+    <string name="enter_your_full_name">Enter your full name</string>
+    <string name="doe">Doe</string>
+    <string name="john">John</string>
+    <string name="complete">Complete</string>
+    <string name="input_code">Input code</string>
+    <string name="debug_code">123456</string>
+    <string name="input_number">Input your phone number</string>
+    <string name="debug_number">+375123456789</string>
+    <string name="send_code">Send code</string>
 </resources>
