@@ -6,6 +6,22 @@
     <data>
 
         <variable
+            name="one"
+            type="String" />
+
+        <variable
+            name="two"
+            type="String" />
+
+        <variable
+            name="three"
+            type="String" />
+
+        <variable
+            name="more"
+            type="String" />
+
+        <variable
             name="route"
             type="inc.fabudi.vulpecula.domain.Route" />
 
@@ -52,7 +68,7 @@
                     android:id="@+id/ticket_seats_label"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Seats"
+                    android:text="@string/seats"
                     tools:layout_editor_absoluteX="55dp"
                     tools:layout_editor_absoluteY="77dp" />
 
@@ -84,7 +100,7 @@
                     android:id="@+id/ticket_seats"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@{route.seatsLeft}"
+                    android:text="@{(Integer.parseInt(route.ticketsLeft) >= 3) ? more: (Integer.parseInt(route.ticketsLeft) == 3) ? three: (Integer.parseInt(route.ticketsLeft) == 2) ? two : one}"
                     tools:layout_editor_absoluteX="55dp"
                     tools:layout_editor_absoluteY="103dp" />
 
