@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.datepicker.MaterialDatePicker
 import inc.fabudi.vulpecula.R
 import inc.fabudi.vulpecula.databinding.FragmentMainBinding
@@ -77,7 +78,12 @@ class MainFragment : Fragment() {
                 ).toString()
             )
         }
-
+        routesViewModelAdapter = RouteAdapter(RouteClick {
+            val dialog = BottomSheetDialog(requireContext())
+            val view = layoutInflater.inflate(R.layout.bottom_sheet_dialog, null)
+            dialog.setContentView(view)
+            dialog.show()
+        })
         binding.ticketsRecyclerView.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = routesViewModelAdapter
