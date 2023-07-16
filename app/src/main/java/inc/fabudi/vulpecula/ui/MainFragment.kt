@@ -122,7 +122,13 @@ class MainFragment : Fragment() {
             dialog.setContentView(bottomSheetBinding.root)
             dialog.show()
         })
-        binding.ticketsRecyclerView.apply {
+        binding.mainAppBarTicketsButton.setOnClickListener {
+            (activity as MainActivity).navController.navigate(R.id.action_mainFragment_to_ticketsFragment)
+        }
+        binding.mainAppBarProfileButton.setOnClickListener {
+            (activity as MainActivity).navController.navigate(R.id.action_mainFragment_to_profileFragment)
+        }
+        binding.routesRecyclerView.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = routesViewModelAdapter
         }
