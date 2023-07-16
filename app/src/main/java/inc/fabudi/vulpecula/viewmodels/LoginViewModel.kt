@@ -4,11 +4,11 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import inc.fabudi.vulpecula.repository.FirebaseRepository
+import inc.fabudi.vulpecula.repository.AuthFirebaseRepository
 
 class LoginViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val repository = FirebaseRepository()
+    private val repository = AuthFirebaseRepository()
 
     fun isLoggedIn() = repository.isLoggedIn()
 
