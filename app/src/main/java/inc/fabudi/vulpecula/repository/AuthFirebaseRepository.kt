@@ -17,7 +17,7 @@ import inc.fabudi.vulpecula.domain.User
 import java.util.concurrent.TimeUnit
 
 
-class FirebaseRepository {
+class AuthFirebaseRepository {
 
     private val auth = FirebaseAuth.getInstance()
     private val databaseReference = Firebase.database.reference
