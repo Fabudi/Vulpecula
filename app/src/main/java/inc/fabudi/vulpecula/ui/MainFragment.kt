@@ -5,19 +5,24 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import android.widget.RadioButton
 import androidx.annotation.LayoutRes
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.datepicker.MaterialDatePicker
 import inc.fabudi.vulpecula.R
+import inc.fabudi.vulpecula.databinding.BottomSheetDialogBinding
 import inc.fabudi.vulpecula.databinding.FragmentMainBinding
 import inc.fabudi.vulpecula.databinding.RouteRowBinding
 import inc.fabudi.vulpecula.domain.Route
 import inc.fabudi.vulpecula.viewmodels.RoutesViewModel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -33,8 +38,10 @@ class MainFragment : Fragment() {
             this, RoutesViewModel.Factory(activity.application)
         )[RoutesViewModel::class.java]
     }
+
     private lateinit var binding: FragmentMainBinding
     private var routesViewModelAdapter: RouteAdapter? = null
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
@@ -51,7 +58,7 @@ class MainFragment : Fragment() {
                     ).format(Date(it)).toString()
                 )
             }
-            datePicker.show(childFragmentManager, "tag")
+            datePicker.show(childFragmentManager, "datePicker")
         }
         binding.searchButton.setOnClickListener {
             if (binding.fromEditText.text.toString() == "") {
@@ -78,10 +85,41 @@ class MainFragment : Fragment() {
                 ).toString()
             )
         }
-        routesViewModelAdapter = RouteAdapter(RouteClick {
+        routesViewModelAdapter = RouteAdapter(RouteClick { route ->
             val dialog = BottomSheetDialog(requireContext())
-            val view = layoutInflater.inflate(R.layout.bottom_sheet_dialog, null)
-            dialog.setContentView(view)
+            val bottomSheetBinding: BottomSheetDialogBinding = DataBindingUtil.inflate(
+                layoutInflater, R.layout.bottom_sheet_dialog, null, false
+            )
+            bottomSheetBinding.viewModel = viewModel
+            bottomSheetBinding.lifecycleOwner = viewLifecycleOwner
+            when (route.ticketsLeft?.toInt()) {
+                1 -> {
+                    bottomSheetBinding.radioButton2.isEnabled = false
+                    bottomSheetBinding.radioButton3.isEnabled = false
+                }
+
+                2 -> {
+                    bottomSheetBinding.radioButton3.isEnabled = false
+                }
+            }
+            bottomSheetBinding.orderCancel.setOnClickListener { dialog.dismiss() }
+            bottomSheetBinding.orderComplete.setOnClickListener {
+                val buttonId = bottomSheetBinding.orderRadioGroup.checkedRadioButtonId
+                val buttonValue =
+                    bottomSheetBinding.root.findViewById<RadioButton>(buttonId).text.toString()
+                        .toInt()
+                viewModel.makeOrder(route, buttonValue)
+                dialog.setCancelable(true)
+                viewModel.viewModelScope.launch {
+                    delay(1500)
+                    dialog.dismiss()
+                    viewModel.orderCompleted.postValue(false)
+                    viewModel.orderInProcess.postValue(false)
+                    viewModel.successfulOrder.postValue(false)
+                }
+            }
+            dialog.setCancelable(false)
+            dialog.setContentView(bottomSheetBinding.root)
             dialog.show()
         })
         binding.ticketsRecyclerView.apply {
@@ -131,6 +169,10 @@ class RouteAdapter(private val callback: RouteClick) : RecyclerView.Adapter<Rout
         holder.viewDataBinding.also { binding ->
             binding.route = routes[position]
             binding.routeCallback = callback
+            binding.one = "1"
+            binding.two = "2"
+            binding.three = "3"
+            binding.more = "3+"
         }
     }
 

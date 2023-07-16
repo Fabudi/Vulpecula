@@ -1,10 +1,10 @@
 package inc.fabudi.vulpecula.viewmodels
 
 import android.app.Application
-import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import inc.fabudi.vulpecula.domain.Route
 import inc.fabudi.vulpecula.repository.RoutesFirebaseRepository
 
 class RoutesViewModel(app: Application) : AndroidViewModel(app) {
@@ -12,11 +12,16 @@ class RoutesViewModel(app: Application) : AndroidViewModel(app) {
     private val repository = RoutesFirebaseRepository()
     var stops = repository.stops
     var routes = repository.routes
+    var successfulOrder = repository.successfulOrder
+    var orderInProcess = repository.orderInProcess
+    var orderCompleted = repository.orderCompleted
 
-    fun searchForDate(from: String, to: String, date: String) {
-        Log.d("Search for:", "$from, $to, $date")
+    fun searchForDate(from: String, to: String, date: String) =
         repository.searchForRoutes(from, to, date)
-    }
+
+
+    fun makeOrder(route: Route, selectedQty: Int) = repository.makeOrder(route, selectedQty)
+
 
     class Factory(private val app: Application) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
