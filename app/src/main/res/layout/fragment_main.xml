@@ -38,14 +38,14 @@
                             android:id="@+id/from_edit_text"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:hint="From, e.g. Minsk"
+                            android:hint="@string/from_e_g_minsk"
                             android:singleLine="true" />
 
                         <AutoCompleteTextView
                             android:id="@+id/to_edit_text"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:hint="To, e.g. Barysaw"
+                            android:hint="@string/to_e_g_barysaw"
                             android:singleLine="true" />
 
                         <EditText
@@ -57,15 +57,16 @@
                             android:ems="10"
                             android:focusable="false"
                             android:focusableInTouchMode="false"
-                            android:hint="When, e.g. 14.05.23"
+                            android:hint="@string/when_e_g_14_05_23"
                             android:inputType="date"
-                            android:singleLine="true" />
+                            android:singleLine="true"
+                            android:autofillHints="" />
 
                         <Button
                             android:id="@+id/search_button"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="Search" />
+                            android:text="@string/search" />
 
                     </LinearLayout>
 
