@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="route"
+            type="inc.fabudi.vulpecula.domain.Route" />
+
+        <variable
+            name="routeCallback"
+            type="inc.fabudi.vulpecula.ui.RouteClick" />
+    </data>
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="5dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="8dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="vertical"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <TextView
+                    android:id="@+id/ticket_travel_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@{route.travelTime}"
+                    tools:layout_editor_absoluteX="182dp"
+                    tools:layout_editor_absoluteY="23dp" />
+
+                <TextView
+                    android:id="@+id/ticket_seats_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Seats"
+                    tools:layout_editor_absoluteX="55dp"
+                    tools:layout_editor_absoluteY="77dp" />
+
+                <TextView
+                    android:id="@+id/ticket_departure_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@{route.departureTime}"
+                    tools:layout_editor_absoluteX="58dp"
+                    tools:layout_editor_absoluteY="16dp" />
+
+                <TextView
+                    android:id="@+id/ticket_from"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@{route.from}"
+                    tools:layout_editor_absoluteX="55dp"
+                    tools:layout_editor_absoluteY="42dp" />
+
+                <TextView
+                    android:id="@+id/ticket_to"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@{route.to}"
+                    tools:layout_editor_absoluteX="289dp"
+                    tools:layout_editor_absoluteY="42dp" />
+
+                <TextView
+                    android:id="@+id/ticket_seats"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@{route.seatsLeft}"
+                    tools:layout_editor_absoluteX="55dp"
+                    tools:layout_editor_absoluteY="103dp" />
+
+                <TextView
+                    android:id="@+id/ticket_arrival_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@{route.arrivalTime}"
+                    tools:layout_editor_absoluteX="289dp"
+                    tools:layout_editor_absoluteY="16dp" />
+
+                <TextView
+                    android:id="@+id/ticket_price"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@{route.price}"
+                    tools:layout_editor_absoluteX="286dp"
+                    tools:layout_editor_absoluteY="96dp" />
+            </LinearLayout>
+
+            <View
+                android:id="@+id/clickableOverlay"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:background="?attr/selectableItemBackground"
+                android:onClick="@{() -> routeCallback.onClick(route)}"
+                android:theme="@style/Base.ThemeOverlay.AppCompat.Dark"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+</layout>
