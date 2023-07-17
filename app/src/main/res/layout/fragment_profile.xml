@@ -46,11 +46,118 @@
                 android:textStyle="bold" />
 
             <ImageButton
+                android:id="@+id/profile_app_bar_logout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/baseline_account_box_24"
-                android:visibility="invisible" />
+                android:src="@drawable/baseline_logout_24" />
         </LinearLayout>
+
+        <ScrollView
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/profile_app_bar">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" >
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:id="@+id/imageView"
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:padding="15dp"
+                        app:srcCompat="@drawable/baseline_account_box_24" />
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:gravity="start|center_vertical"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/profile_full_name"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@{viewModel.fullName}" />
+
+                        <TextView
+                            android:id="@+id/profile_phone"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@{viewModel.userPhone}" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Statistics" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/profile_statistics_tickets"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@{viewModel.ticketsQuantity}"
+                        android:gravity="center" />
+
+                    <TextView
+                        android:id="@+id/profile_statistics_distance"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@{viewModel.distance}"
+                        android:gravity="center" />
+
+                    <TextView
+                        android:id="@+id/profile_statistics_discount"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@{viewModel.discount}"
+                        android:gravity="center" />
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Contact us" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+
+                    <ImageButton
+                        android:id="@+id/profile_contact_mail"
+                        android:layout_width="80dp"
+                        android:layout_height="80dp"
+                        android:src="@drawable/baseline_mail_24" />
+
+                    <ImageButton
+                        android:id="@+id/profile_contact_phone"
+                        android:layout_width="80dp"
+                        android:layout_height="80dp"
+                        android:src="@drawable/baseline_call_24" />
+                </LinearLayout>
+            </LinearLayout>
+        </ScrollView>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

@@ -1,5 +1,7 @@
 package inc.fabudi.vulpecula.ui
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -32,13 +34,28 @@ class ProfileFragment : Fragment() {
             inflater, R.layout.fragment_profile, container, false
         )
         binding.viewModel = viewModel
+        binding.lifecycleOwner = viewLifecycleOwner
         binding.profileAppBarBackButton.setOnClickListener {
             (activity as MainActivity).navController.navigate(R.id.action_profileFragment_to_mainFragment)
+        }
+        binding.profileAppBarLogout.setOnClickListener {
+            viewModel.logout()
+            (activity as MainActivity).navController.navigate(R.id.action_profileFragment_to_loginFragment)
+        }
+        binding.profileContactMail.setOnClickListener {
+            val intent = Intent(Intent.ACTION_SENDTO).apply {
+                data = Uri.parse("mailto:")
+                putExtra(Intent.EXTRA_EMAIL, arrayOf(viewModel.email.value))
+            }
+            startActivity(intent)
+        }
+        binding.profileContactPhone.setOnClickListener {
+            val intent = Intent(Intent.ACTION_DIAL).apply {
+                data = Uri.parse("tel:${viewModel.contactPhone.value}")
+            }
+            startActivity(intent)
         }
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-    }
 }

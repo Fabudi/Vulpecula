@@ -8,7 +8,18 @@ import inc.fabudi.vulpecula.repository.ProfileFirebaseRepository
 
 class ProfileViewModel(app: Application) : AndroidViewModel(app) {
 
+
     private val repository = ProfileFirebaseRepository()
+
+    var ticketsQuantity = repository.ticketsQuantity
+    var distance = repository.distance
+    var discount = repository.discount
+    var email = repository.email
+    var contactPhone = repository.contactPhone
+    var fullName = repository.fullName
+    var userPhone = repository.userPhone
+    fun logout() = repository.logout()
+
 
 
     class Factory(private val app: Application) : ViewModelProvider.Factory {
