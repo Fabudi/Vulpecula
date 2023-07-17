@@ -14,10 +14,8 @@ import inc.fabudi.vulpecula.domain.Ticket
 import inc.fabudi.vulpecula.domain.User
 
 class ProfileFirebaseRepository {
-    fun logout() = Firebase.auth.signOut()
 
     private val databaseReference = Firebase.database.reference
-
     var ticketsQuantity = MutableLiveData<String>()
     var distance = MutableLiveData<String>()
     var discount = MutableLiveData<String>()
@@ -27,38 +25,18 @@ class ProfileFirebaseRepository {
     var userPhone = MutableLiveData<String>()
 
     init {
-        refreshData()
+        refreshContactInfo()
+        refreshUser()
     }
 
-    private fun refreshData() {
+    fun logout() = Firebase.auth.signOut()
+
+    private fun refreshContactInfo() {
         databaseReference.child("contactInfo").addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                val contactInfo = snapshot.getValue<ContactInfo>()
-                email.postValue(contactInfo?.email.toString())
-                contactPhone.postValue(contactInfo?.phone.toString())
-                Log.d("ContactInfo", contactInfo.toString())
-                databaseReference.child("users").child(Firebase.auth.uid.toString()).get()
-                    .addOnSuccessListener {
-                        val user = it.getValue<User>()
-                        fullName.postValue("${user?.name} ${user?.lastname}")
-                        userPhone.postValue(Firebase.auth.currentUser?.phoneNumber)
-                        ticketsQuantity.postValue(user?.tickets?.size.toString())
-                        databaseReference.child("tickets").get().addOnSuccessListener { ticketsDb ->
-                            val tickets = mutableListOf<Ticket>()
-                            for (item in ticketsDb.children) {
-                                val ticket = item.getValue<Ticket>()
-                                if (user?.tickets?.contains(ticket?.id.toString()) == true) tickets.add(
-                                    ticket!!
-                                )
-                            }
-                            var totalDistance = 0
-                            tickets.forEach { ticket ->
-                                totalDistance += ticket.distance.toString().toInt()
-                            }
-                            distance.postValue(totalDistance.toString())
-                            discount.postValue("${(totalDistance / 1000)}%")
-                        }
-                    }
+                val contactInfo = snapshot.getValue<ContactInfo>()!!
+                email.postValue(contactInfo.email)
+                contactPhone.postValue(contactInfo.phone)
             }
 
             override fun onCancelled(error: DatabaseError) {
@@ -66,5 +44,27 @@ class ProfileFirebaseRepository {
             }
 
         })
+    }
+
+    private fun refreshUser() {
+        databaseReference.child("users").child(Firebase.auth.uid.toString()).get()
+            .addOnSuccessListener {
+                val user = it.getValue<User>()!!
+                fullName.postValue("${user.name} ${user.lastname}")
+                userPhone.postValue(Firebase.auth.currentUser?.phoneNumber)
+                ticketsQuantity.postValue(user.tickets.size.toString())
+                refreshStatistics(user.tickets)
+            }
+    }
+
+    private fun refreshStatistics(ticketsIds: List<String>) {
+        databaseReference.child("tickets").get().addOnSuccessListener { snapshot ->
+            val tickets = snapshot.children
+                .map { item -> item.getValue<Ticket>()!! }
+                .filter { ticket -> (ticketsIds.contains(ticket.id)) }
+            val totalDistance = tickets.sumOf { it.distance.toString().toInt() }
+            distance.postValue(totalDistance.toString())
+            discount.postValue("${totalDistance / 1000}%")
+        }
     }
 }

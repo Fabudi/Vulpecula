@@ -23,7 +23,6 @@ class LoginFragment : Fragment() {
         )[LoginViewModel::class.java]
     }
 
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
@@ -31,22 +30,27 @@ class LoginFragment : Fragment() {
             (activity as MainActivity).navController.navigate(R.id.action_loginFragment_to_mainFragment)
         }
         val binding: FragmentLoginBinding = DataBindingUtil.inflate(
-            inflater, R.layout.fragment_login, container, false
+            inflater,
+            R.layout.fragment_login,
+            container,
+            false
         )
         binding.lifecycleOwner = viewLifecycleOwner
         binding.viewModel = viewModel
 
         binding.sendPhoneButton.setOnClickListener {
-            viewModel.login(binding.phoneEditText.text.toString())
+            val phone = binding.phoneEditText.text.toString()
+            viewModel.login(phone)
         }
         binding.sendCodeButton.setOnClickListener {
-            viewModel.completeLogin(binding.codeEditText.text.toString())
-            if(!viewModel.newUser.get()) (activity as MainActivity).navController.navigate(R.id.action_loginFragment_to_mainFragment)
+            val code = binding.codeEditText.text.toString()
+            viewModel.completeLogin(code)
+            if (!viewModel.newUser.get()) (activity as MainActivity).navController.navigate(R.id.action_loginFragment_to_mainFragment)
         }
         binding.infoButton.setOnClickListener {
-            viewModel.writeUserToDatabase(
-                binding.nameEditText.text.toString(), binding.lastnameEditText.text.toString()
-            )
+            val name = binding.nameEditText.text.toString()
+            val lastName = binding.lastnameEditText.text.toString()
+            viewModel.writeUserToDatabase(name, lastName)
             (activity as MainActivity).navController.navigate(R.id.action_loginFragment_to_mainFragment)
         }
         return binding.root

@@ -1,66 +1,73 @@
 package inc.fabudi.vulpecula.domain
 
+import java.util.Date
+
 data class User(
-    val uid: String? = null, val name: String? = null, val lastname: String? = null, val tickets: List<String>? = emptyList()
+    val uid: String = "No data",
+    val name: String = "No data",
+    val lastname: String = "No data",
+    val tickets: List<String> = emptyList()
 )
 
 data class Ticket(
-    val id: String? = null,
-    val from: String? = null,
-    val to: String? = null,
-    val departureDate: String? = null,
-    val departureTime: String? = null,
-    val arrivalDate: String? = null,
-    val arrivalTime: String? = null,
-    val busPlate: String? = null,
-    val busColor: String? = null,
-    val driver: String? = null,
-    val seats: String? = null,
-    val price: String? = null,
-    val routeId: String? = null,
-    val distance: String? = null
+    val id: String = "No data",
+    val from: String = "No data",
+    val to: String = "No data",
+    val departureDateTimeString: String = "",
+    val arrivalDateTimeString: String = "",
+    val busPlate: String = "No data",
+    val busColor: String = "No data",
+    val seats: Int = 0,
+    val price: Int = 0,
+    val routeId: String = "No data",
+    val travelTimeMinutes: Int = 0,
+    val travelTimeHours: Int = 0,
+    val distance: Int = 0
 ) {
-    constructor(id: String, busColor: String, seats: String, route: Route) : this(
-        id,
-        route.from,
-        route.to,
-        route.departureDate,
-        route.departureTime,
-        route.arrivalDate,
-        route.arrivalTime,
-        route.bus,
-        busColor,
-        route.driver,
-        seats,
-        (route.price.toString().toInt() * seats.toInt()).toString(),
-        route.id,
-        route.distance
+    var departureDateTime: Date = Date()
+    var arrivalDateTime: Date = Date()
+
+    constructor(id: String, seats: Int, route: Route) : this(
+        id = id,
+        from = route.from,
+        to = route.to,
+        departureDateTimeString = route.departureDateTimeString,
+        arrivalDateTimeString = route.arrivalDateTimeString,
+        busPlate = route.busPlate,
+        busColor = route.busColor,
+        seats = seats,
+        price = route.price * seats,
+        routeId = route.id,
+        travelTimeMinutes = route.travelTimeMinutes,
+        travelTimeHours = route.travelTimeHours,
+        distance = route.distance
     )
 }
 
 data class Route(
-    val id: String? = null,
-    val from: String? = null,
-    val to: String? = null,
-    val departureDate: String? = null,
-    val departureTime: String? = null,
-    val arrivalDate: String? = null,
-    val arrivalTime: String? = null,
-    val bus: String? = null,
-    val ticketsLeft: String? = null,
-    val driver: String? = null,
-    val price: String? = null,
-    val travelTime: String = arrivalTime + departureDate,
-    val distance: String? = null
-)
+    val id: String = "No data",
+    val from: String = "No data",
+    val to: String = "No data",
+    val departureDateTimeString: String = "",
+    val arrivalDateTimeString: String = "",
+    val busPlate: String = "No data",
+    val busColor: String = "No data",
+    val ticketsLeft: Int = 0,
+    val price: Int = 0,
+    val travelTimeMinutes: Int = 0,
+    val travelTimeHours: Int = 0,
+    val distance: Int = 0
+) {
+    var departureDateTime: Date = Date()
+    var arrivalDateTime: Date = Date()
+}
 
 data class Stop(
-    val name: String? = null
+    val name: String = "No data"
 ) {
-    override fun toString(): String = name.toString()
+    override fun toString() = name
 }
 
 data class ContactInfo(
-    val phone: String? = null,
-    val email: String? = null
+    val phone: String = "+375123456789", val email: String = "some@thing.com"
 )

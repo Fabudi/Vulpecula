@@ -31,25 +31,32 @@ class TicketsFragment : Fragment() {
     }
 
     private lateinit var binding: FragmentTicketsBinding
-    private lateinit var activeTicketsAdapter: TicketsAdapter
+    private var activeTicketsAdapter: TicketsAdapter = TicketsAdapter()
+    private var archivedTicketsAdapter: TicketsAdapter = TicketsAdapter()
     private lateinit var bookedTicketsAdapter: TicketsAdapter
-    private lateinit var archivedTicketsAdapter: TicketsAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         binding = DataBindingUtil.inflate(
-            inflater, R.layout.fragment_tickets, container, false
+            inflater,
+            R.layout.fragment_tickets,
+            container,
+            false
         )
         binding.viewModel = viewModel
         binding.ticketsAppBarBackButton.setOnClickListener {
             (activity as MainActivity).navController.navigate(R.id.action_ticketsFragment_to_mainFragment)
         }
         activeTicketsAdapter = TicketsAdapter()
+        archivedTicketsAdapter = TicketsAdapter()
         bookedTicketsAdapter = TicketsAdapter(TicketClick { ticket ->
             val dialog = BottomSheetDialog(requireContext())
             val bottomSheetBinding: CancelOrderBottomSheetDialogBinding = DataBindingUtil.inflate(
-                layoutInflater, R.layout.cancel_order_bottom_sheet_dialog, null, false
+                layoutInflater,
+                R.layout.cancel_order_bottom_sheet_dialog,
+                null,
+                false
             )
             bottomSheetBinding.viewModel = viewModel
             bottomSheetBinding.lifecycleOwner = viewLifecycleOwner
@@ -61,7 +68,6 @@ class TicketsFragment : Fragment() {
             dialog.setContentView(bottomSheetBinding.root)
             dialog.show()
         })
-        archivedTicketsAdapter = TicketsAdapter()
         binding.ticketsActiveRecyclerView.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = activeTicketsAdapter
@@ -74,7 +80,6 @@ class TicketsFragment : Fragment() {
             layoutManager = LinearLayoutManager(context)
             adapter = archivedTicketsAdapter
         }
-
         return binding.root
     }
 

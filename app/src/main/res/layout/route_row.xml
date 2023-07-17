@@ -60,7 +60,7 @@
                     android:id="@+id/ticket_travel_time"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@{route.travelTime}"
+                    android:text="@{String.valueOf(route.travelTimeHours) +':'+ String.valueOf(route.travelTimeMinutes)}"
                     tools:layout_editor_absoluteX="182dp"
                     tools:layout_editor_absoluteY="23dp" />
 
@@ -76,7 +76,7 @@
                     android:id="@+id/ticket_departure_time"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@{route.departureTime}"
+                    android:text="@{route.departureDateTime.toString()}"
                     tools:layout_editor_absoluteX="58dp"
                     tools:layout_editor_absoluteY="16dp" />
 
@@ -100,7 +100,7 @@
                     android:id="@+id/ticket_seats"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@{(Integer.parseInt(route.ticketsLeft) >= 3) ? more: (Integer.parseInt(route.ticketsLeft) == 3) ? three: (Integer.parseInt(route.ticketsLeft) == 2) ? two : one}"
+                    android:text="@{(route.ticketsLeft >= 3) ? more: (route.ticketsLeft == 3) ? three: (route.ticketsLeft == 2) ? two : one}"
                     tools:layout_editor_absoluteX="55dp"
                     tools:layout_editor_absoluteY="103dp" />
 
@@ -108,7 +108,7 @@
                     android:id="@+id/ticket_arrival_time"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@{route.arrivalTime}"
+                    android:text="@{route.arrivalDateTime.toString()}"
                     tools:layout_editor_absoluteX="289dp"
                     tools:layout_editor_absoluteY="16dp" />
 
@@ -116,7 +116,7 @@
                     android:id="@+id/ticket_price"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@{route.price}"
+                    android:text="@{String.valueOf(route.price)}"
                     tools:layout_editor_absoluteX="286dp"
                     tools:layout_editor_absoluteY="96dp" />
             </LinearLayout>

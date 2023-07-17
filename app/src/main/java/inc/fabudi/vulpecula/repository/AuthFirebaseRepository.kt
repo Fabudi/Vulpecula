@@ -23,11 +23,9 @@ class AuthFirebaseRepository {
     private val auth = FirebaseAuth.getInstance()
     private val databaseReference = Firebase.database.reference
     var user: MutableLiveData<FirebaseUser> = MutableLiveData()
-    private var loggedOut: MutableLiveData<Boolean> = MutableLiveData()
     var wrongCode: MutableLiveData<Boolean> = MutableLiveData()
     var codeSent = ObservableBoolean()
     var newUser = ObservableBoolean()
-
     private var storedVerificationId: MutableLiveData<String> = MutableLiveData()
     private var resendToken: MutableLiveData<PhoneAuthProvider.ForceResendingToken> =
         MutableLiveData()
@@ -56,20 +54,19 @@ class AuthFirebaseRepository {
         }
     }
 
-
     init {
         if (auth.currentUser != null) {
             try {
                 auth.currentUser?.getIdToken(true)
                 user.postValue(auth.currentUser)
-                loggedOut.postValue(false)
             } catch (e: FirebaseAuthInvalidUserException) {
-                logOut()
+                logout()
             }
         }
     }
 
     fun isLoggedIn() = auth.currentUser != null
+    private fun logout() = auth.signOut()
 
     fun sendCodeToPhone(phoneNumber: String) {
         val options = PhoneAuthOptions.newBuilder(auth).setPhoneNumber(phoneNumber)
@@ -85,14 +82,9 @@ class AuthFirebaseRepository {
         )
     }
 
-    fun logOut() {
-        auth.signOut()
-        loggedOut.postValue(true)
-    }
-
     fun writeUserToDatabase(name: String, lastname: String) {
-        val user = User(auth.uid, name, lastname)
-        databaseReference.child("users").child(user.uid.toString()).setValue(user)
+        val user = User(auth.uid.toString(), name, lastname)
+        databaseReference.child("users").child(user.uid).setValue(user)
     }
 
     private fun signInWithPhoneAuthCredential(credential: PhoneAuthCredential) {

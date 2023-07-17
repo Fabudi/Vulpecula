@@ -14,10 +14,12 @@ import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.android.material.datepicker.CalendarConstraints
+import com.google.android.material.datepicker.DateValidatorPointForward
 import com.google.android.material.datepicker.MaterialDatePicker
 import inc.fabudi.vulpecula.R
-import inc.fabudi.vulpecula.databinding.BottomSheetDialogBinding
 import inc.fabudi.vulpecula.databinding.FragmentMainBinding
+import inc.fabudi.vulpecula.databinding.MakeOrderBottomSheetDialogBinding
 import inc.fabudi.vulpecula.databinding.RouteRowBinding
 import inc.fabudi.vulpecula.domain.Route
 import inc.fabudi.vulpecula.viewmodels.RoutesViewModel
@@ -46,15 +48,25 @@ class MainFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         binding = DataBindingUtil.inflate(
-            inflater, R.layout.fragment_main, container, false
+            inflater,
+            R.layout.fragment_main,
+            container,
+            false
         )
         binding.dateEditText.setOnClickListener {
-            val datePicker = MaterialDatePicker.Builder.datePicker().setTitleText("Select date")
-                .setSelection(MaterialDatePicker.todayInUtcMilliseconds()).build()
+            val constraints = CalendarConstraints.Builder()
+                .setValidator(DateValidatorPointForward.now())
+                .build()
+            val datePicker = MaterialDatePicker.Builder.datePicker()
+                .setTitleText("Select date")
+                .setSelection(MaterialDatePicker.todayInUtcMilliseconds())
+                .setCalendarConstraints(constraints)
+                .build()
             datePicker.addOnPositiveButtonClickListener {
                 binding.dateEditText.setText(
                     SimpleDateFormat(
-                        "dd.MM.yyyy", Locale.getDefault()
+                        "dd.MM.yyyy",
+                        Locale.getDefault()
                     ).format(Date(it)).toString()
                 )
             }
@@ -75,24 +87,17 @@ class MainFragment : Fragment() {
             }
             viewModel.searchForDate(
                 binding.fromEditText.text.toString(),
-                binding.toEditText.text.toString(),
-                SimpleDateFormat(
-                    "yyyy-MM-dd", Locale.getDefault()
-                ).format(
-                    SimpleDateFormat(
-                        "dd.MM.yyyy", Locale.getDefault()
-                    ).parse(binding.dateEditText.text.toString())!!
-                ).toString()
+                binding.toEditText.text.toString()
             )
         }
         routesViewModelAdapter = RouteAdapter(RouteClick { route ->
             val dialog = BottomSheetDialog(requireContext())
-            val bottomSheetBinding: BottomSheetDialogBinding = DataBindingUtil.inflate(
-                layoutInflater, R.layout.bottom_sheet_dialog, null, false
+            val bottomSheetBinding: MakeOrderBottomSheetDialogBinding = DataBindingUtil.inflate(
+                layoutInflater, R.layout.make_order_bottom_sheet_dialog, null, false
             )
             bottomSheetBinding.viewModel = viewModel
             bottomSheetBinding.lifecycleOwner = viewLifecycleOwner
-            when (route.ticketsLeft?.toInt()) {
+            when (route.ticketsLeft) {
                 1 -> {
                     bottomSheetBinding.radioButton2.isEnabled = false
                     bottomSheetBinding.radioButton3.isEnabled = false

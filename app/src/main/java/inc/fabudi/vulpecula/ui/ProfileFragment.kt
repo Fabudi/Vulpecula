@@ -31,10 +31,14 @@ class ProfileFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         binding = DataBindingUtil.inflate(
-            inflater, R.layout.fragment_profile, container, false
+            inflater,
+            R.layout.fragment_profile,
+            container,
+            false
         )
         binding.viewModel = viewModel
         binding.lifecycleOwner = viewLifecycleOwner
+
         binding.profileAppBarBackButton.setOnClickListener {
             (activity as MainActivity).navController.navigate(R.id.action_profileFragment_to_mainFragment)
         }

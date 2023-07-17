@@ -12,10 +12,10 @@ import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
-import inc.fabudi.vulpecula.domain.Route
 import inc.fabudi.vulpecula.domain.Ticket
+import inc.fabudi.vulpecula.utils.ISO_8601_FORMAT
 import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
+import java.time.ZoneId
 
 class TicketsFirebaseRepository {
     private val databaseReference = Firebase.database.reference
@@ -35,57 +35,8 @@ class TicketsFirebaseRepository {
         databaseReference.child("users").child(Firebase.auth.uid.toString()).child("tickets")
             .addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
-                    val ticketsIds = mutableListOf<String>()
-                    for (stop in snapshot.children) {
-                        ticketsIds.add(stop.getValue<String>()!!)
-                    }
-                    databaseReference.child("tickets")
-                        .addValueEventListener(object : ValueEventListener {
-                            @RequiresApi(Build.VERSION_CODES.O)
-                            override fun onDataChange(snapshot: DataSnapshot) {
-                                val tickets = mutableListOf<Ticket>()
-                                for (ticket in snapshot.children) {
-                                    tickets.add(ticket.getValue<Ticket>()!!)
-                                }
-                                archivedTickets.postValue(tickets.filter { ticket ->
-                                    LocalDateTime.parse(
-                                        ticket.arrivalDate + ticket.arrivalTime,
-                                        DateTimeFormatter.ofPattern("yyyy-MM-ddHH:mm")
-                                    ) < LocalDateTime.now()
-                                }.apply {
-                                    noArchivedTickets.set(this.isEmpty())
-                                })
-                                bookedTickets.postValue(tickets.filter { ticket ->
-                                    LocalDateTime.parse(
-                                        ticket.arrivalDate + ticket.arrivalTime,
-                                        DateTimeFormatter.ofPattern("yyyy-MM-ddHH:mm")
-                                    ) > LocalDateTime.now() && LocalDateTime.parse(
-                                        ticket.departureDate + ticket.departureTime,
-                                        DateTimeFormatter.ofPattern("yyyy-MM-ddHH:mm")
-                                    ) > LocalDateTime.now()
-                                }.apply {
-                                    noBookedTickets.set(this.isEmpty())
-                                })
-                                activeTickets.postValue(tickets.filter { ticket ->
-                                    LocalDateTime.parse(
-                                        ticket.departureDate + ticket.departureTime,
-                                        DateTimeFormatter.ofPattern("yyyy-MM-ddHH:mm")
-                                    ) < LocalDateTime.now() && LocalDateTime.parse(
-                                        ticket.arrivalDate + ticket.arrivalTime,
-                                        DateTimeFormatter.ofPattern("yyyy-MM-ddHH:mm")
-                                    ) > LocalDateTime.now()
-                                }.apply {
-                                    noActiveTickets.set(this.isEmpty())
-                                    Log.d("Active", this.isEmpty().toString())
-                                    Log.d("Active", noActiveTickets.get().toString())
-                                })
-                            }
-
-                            override fun onCancelled(error: DatabaseError) {
-                                Log.e("Sorted Tickets", error.toString())
-                            }
-
-                        })
+                    val ticketsIds = snapshot.children.map { item -> item.getValue<String>()!! }
+                    sortTickets(ticketsIds)
                 }
 
                 override fun onCancelled(error: DatabaseError) {
@@ -96,43 +47,99 @@ class TicketsFirebaseRepository {
             })
     }
 
-    fun cancelOrder(ticket: Ticket) {
-        databaseReference.child("tickets").get().addOnSuccessListener {
-            val ticketsArray = mutableListOf<Ticket>()
-            for (item in it.children) {
-                val itemTicket = item.getValue<Ticket>()!!
-                ticketsArray.add(itemTicket)
-            }
-            ticketsArray.remove(ticket)
-            databaseReference.child("tickets").setValue(ticketsArray).addOnSuccessListener {
-                databaseReference.child("routes").child(ticket.routeId.toString()).get()
-                    .addOnSuccessListener { routes ->
-                        databaseReference.child("routes").child(ticket.routeId.toString())
-                            .child("ticketsLeft").setValue(
-                                (routes.getValue<Route>()?.ticketsLeft.toString()
-                                    .toInt() + ticket.seats.toString().toInt()).toString()
-                            ).addOnSuccessListener {
-                                databaseReference.child("users").child(Firebase.auth.uid.toString())
-                                    .child("tickets").get().addOnSuccessListener { userTickets ->
-                                    var tickets = userTickets.getValue<List<String>>()
-                                    tickets = if (tickets == null) mutableListOf()
-                                    else tickets as MutableList<String>
-                                    tickets.remove(ticket.id.toString())
-                                    val childUpdates = hashMapOf(
-                                        "/routes/${ticket.routeId}/ticketsLeft" to (routes.getValue<Route>()?.ticketsLeft.toString()
-                                            .toInt() + ticket.seats.toString().toInt()).toString(),
-                                        "/users/${Firebase.auth.currentUser?.uid}/tickets" to tickets
-                                    )
-                                    try {
-                                        databaseReference.updateChildren(childUpdates)
-                                    } catch (e: Exception) {
-                                        Log.e("Cancel order", e.toString())
-                                    }
-                                }
-                                loadTickets()
-                            }
+    private fun sortTickets(ticketsIds: List<String>) {
+        databaseReference.child("tickets").addValueEventListener(object : ValueEventListener {
+            @RequiresApi(Build.VERSION_CODES.O)
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val tickets = snapshot.children.map { item ->
+                    item.getValue<Ticket>()!!.also {
+                        it.arrivalDateTime = ISO_8601_FORMAT.parse(it.arrivalDateTimeString)!!
+                        it.departureDateTime = ISO_8601_FORMAT.parse(it.departureDateTimeString)!!
                     }
+                }.filter { ticket -> ticket.id in ticketsIds } as MutableList<Ticket>
+                sortArchivedTickets(tickets)
+                sortBookedTickets(tickets)
+                sortActiveTickets(tickets)
             }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.e("Sorted Tickets", error.toString())
+            }
+
+        })
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun sortActiveTickets(tickets: MutableList<Ticket>) {
+        activeTickets.postValue(tickets.filter { ticket ->
+            LocalDateTime.ofInstant(
+                ticket.departureDateTime.toInstant(), ZoneId.systemDefault()
+            ) < LocalDateTime.now() && LocalDateTime.ofInstant(
+                ticket.arrivalDateTime.toInstant(), ZoneId.systemDefault()
+            ) > LocalDateTime.now()
+        }.apply {
+            noActiveTickets.set(this.isEmpty())
+        })
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun sortBookedTickets(tickets: MutableList<Ticket>) {
+        bookedTickets.postValue(tickets.filter { ticket ->
+            LocalDateTime.ofInstant(
+                ticket.arrivalDateTime.toInstant(), ZoneId.systemDefault()
+            ) > LocalDateTime.now() && LocalDateTime.ofInstant(
+                ticket.departureDateTime.toInstant(), ZoneId.systemDefault()
+            ) > LocalDateTime.now()
+        }.apply {
+            noBookedTickets.set(this.isEmpty())
+        })
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun sortArchivedTickets(tickets: MutableList<Ticket>) {
+        archivedTickets.postValue(tickets.filter { ticket ->
+            LocalDateTime.ofInstant(
+                ticket.arrivalDateTime.toInstant(), ZoneId.systemDefault()
+            ) < LocalDateTime.now()
+        }.apply {
+            noArchivedTickets.set(this.isEmpty())
+        })
+    }
+
+    fun cancelOrder(ticket: Ticket) {
+        updateRoute(ticket)
+        updateUser(ticket)
+        updateTickets(ticket)
+    }
+
+    private fun updateTickets(ticket: Ticket) {
+        databaseReference.child("tickets").get().addOnSuccessListener { snapshot ->
+            val ticketsArray =
+                (snapshot.children.map { item -> item.getValue<Ticket>()!! } as MutableList<Ticket>).also {
+                    it.remove(ticket)
+                }
+            databaseReference.child("tickets").setValue(ticketsArray)
         }
+    }
+
+    private fun updateUser(ticket: Ticket) {
+        databaseReference.child("users").child(Firebase.auth.uid.toString()).child("tickets").get()
+            .addOnSuccessListener { snapshot ->
+                val tickets =
+                    (snapshot.children.map { item -> item.getValue<String>()!! } as MutableList<String>).also {
+                        it.remove(ticket.id)
+                    }
+                databaseReference.child("users").child(Firebase.auth.uid.toString())
+                    .child("tickets").setValue(tickets)
+            }
+    }
+
+    private fun updateRoute(ticket: Ticket) {
+        databaseReference.child("routes").child(ticket.routeId).child("ticketsLeft").get()
+            .addOnSuccessListener {
+                val currentValue = it.getValue<Int>()!!
+                databaseReference.child("routes").child(ticket.routeId).child("ticketsLeft")
+                    .setValue(currentValue + ticket.seats)
+            }
     }
 }

@@ -10,7 +10,6 @@ import inc.fabudi.vulpecula.repository.TicketsFirebaseRepository
 class TicketsViewModel(app: Application) : AndroidViewModel(app) {
 
     private val repository = TicketsFirebaseRepository()
-    var noTickets = repository.noTickets
     var activeTickets = repository.activeTickets
     var bookedTickets = repository.bookedTickets
     var archivedTickets = repository.archivedTickets

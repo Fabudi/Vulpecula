@@ -39,6 +39,14 @@
                 app:layout_constraintTop_toTopOf="parent">
 
                 <TextView
+                    android:id="@+id/ticket_travel_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@{String.valueOf(ticket.travelTimeHours) +':'+ String.valueOf(ticket.travelTimeMinutes)}"
+                    tools:layout_editor_absoluteX="182dp"
+                    tools:layout_editor_absoluteY="23dp" />
+
+                <TextView
                     android:id="@+id/ticket_from"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -58,7 +66,7 @@
                     android:id="@+id/ticket_departure_time"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@{ticket.departureTime}"
+                    android:text="@{ticket.departureDateTime.toString()}"
                     tools:layout_editor_absoluteX="55dp"
                     tools:layout_editor_absoluteY="42dp" />
 
@@ -66,7 +74,7 @@
                     android:id="@+id/ticket_arrival_time"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@{ticket.arrivalTime}"
+                    android:text="@{ticket.arrivalDateTime.toString()}"
                     tools:layout_editor_absoluteX="289dp"
                     tools:layout_editor_absoluteY="42dp" />
 
@@ -74,7 +82,7 @@
                     android:id="@+id/ticket_departure_date"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@{ticket.departureDate}"
+                    android:text="@{ticket.departureDateTime.toString()}"
                     tools:layout_editor_absoluteX="55dp"
                     tools:layout_editor_absoluteY="103dp" />
 
@@ -82,7 +90,7 @@
                     android:id="@+id/ticket_seats"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@{ticket.seats}"
+                    android:text="@{String.valueOf(ticket.seats)}"
                     tools:layout_editor_absoluteX="289dp"
                     tools:layout_editor_absoluteY="16dp" />
 
@@ -106,7 +114,7 @@
                     android:id="@+id/ticket_price"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@{ticket.price}"
+                    android:text="@{String.valueOf(ticket.price)}"
                     tools:layout_editor_absoluteX="286dp"
                     tools:layout_editor_absoluteY="96dp" />
             </LinearLayout>

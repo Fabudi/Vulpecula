@@ -16,12 +16,10 @@ class RoutesViewModel(app: Application) : AndroidViewModel(app) {
     var orderInProcess = repository.orderInProcess
     var orderCompleted = repository.orderCompleted
 
-    fun searchForDate(from: String, to: String, date: String) =
-        repository.searchForRoutes(from, to, date)
-
+    fun searchForDate(from: String, to: String) =
+        repository.searchForRoutes(from, to)
 
     fun makeOrder(route: Route, selectedQty: Int) = repository.makeOrder(route, selectedQty)
-
 
     class Factory(private val app: Application) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
