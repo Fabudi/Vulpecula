@@ -41,6 +41,7 @@ class LoginFragment : Fragment() {
         }
         binding.sendCodeButton.setOnClickListener {
             viewModel.completeLogin(binding.codeEditText.text.toString())
+            if(!viewModel.newUser.get()) (activity as MainActivity).navController.navigate(R.id.action_loginFragment_to_mainFragment)
         }
         binding.infoButton.setOnClickListener {
             viewModel.writeUserToDatabase(
