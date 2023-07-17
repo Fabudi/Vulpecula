@@ -1,5 +1,6 @@
 package inc.fabudi.vulpecula.repository
 
+import androidx.databinding.ObservableBoolean
 import androidx.lifecycle.MutableLiveData
 import com.google.firebase.FirebaseException
 import com.google.firebase.FirebaseTooManyRequestsException
@@ -24,8 +25,9 @@ class AuthFirebaseRepository {
     var user: MutableLiveData<FirebaseUser> = MutableLiveData()
     private var loggedOut: MutableLiveData<Boolean> = MutableLiveData()
     var wrongCode: MutableLiveData<Boolean> = MutableLiveData()
-    var codeSent: MutableLiveData<Boolean> = MutableLiveData()
-    var newUser: MutableLiveData<Boolean> = MutableLiveData()
+    var codeSent = ObservableBoolean()
+    var newUser = ObservableBoolean()
+
     private var storedVerificationId: MutableLiveData<String> = MutableLiveData()
     private var resendToken: MutableLiveData<PhoneAuthProvider.ForceResendingToken> =
         MutableLiveData()
@@ -50,7 +52,7 @@ class AuthFirebaseRepository {
         ) {
             storedVerificationId.postValue(verificationId)
             resendToken.postValue(token)
-            codeSent.postValue(true)
+            codeSent.set(true)
         }
     }
 
@@ -96,7 +98,7 @@ class AuthFirebaseRepository {
     private fun signInWithPhoneAuthCredential(credential: PhoneAuthCredential) {
         auth.signInWithCredential(credential).addOnCompleteListener { task ->
             if (task.isSuccessful) {
-                newUser.postValue(task.result.additionalUserInfo?.isNewUser == true)
+                newUser.set(task.result.additionalUserInfo?.isNewUser == true)
             } else {
                 if (task.exception is FirebaseAuthInvalidCredentialsException) {
                     wrongCode.postValue(true)
