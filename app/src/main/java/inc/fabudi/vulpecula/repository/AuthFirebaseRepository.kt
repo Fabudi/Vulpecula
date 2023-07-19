@@ -1,5 +1,6 @@
 package inc.fabudi.vulpecula.repository
 
+import android.util.Log
 import androidx.databinding.ObservableBoolean
 import androidx.lifecycle.MutableLiveData
 import com.google.firebase.FirebaseException
@@ -13,6 +14,7 @@ import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthOptions
 import com.google.firebase.auth.PhoneAuthProvider
 import com.google.firebase.database.ktx.database
+import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 import inc.fabudi.vulpecula.domain.User
 import java.util.concurrent.TimeUnit
@@ -26,6 +28,7 @@ class AuthFirebaseRepository {
     var wrongCode: MutableLiveData<Boolean> = MutableLiveData()
     var codeSent = ObservableBoolean()
     var newUser = ObservableBoolean()
+    var loggedIn = ObservableBoolean()
     private var storedVerificationId: MutableLiveData<String> = MutableLiveData()
     private var resendToken: MutableLiveData<PhoneAuthProvider.ForceResendingToken> =
         MutableLiveData()
@@ -55,6 +58,7 @@ class AuthFirebaseRepository {
     }
 
     init {
+        loggedIn.set(auth.currentUser != null)
         if (auth.currentUser != null) {
             try {
                 auth.currentUser?.getIdToken(true)
@@ -65,7 +69,6 @@ class AuthFirebaseRepository {
         }
     }
 
-    fun isLoggedIn() = auth.currentUser != null
     private fun logout() = auth.signOut()
 
     fun sendCodeToPhone(phoneNumber: String) {
@@ -83,14 +86,21 @@ class AuthFirebaseRepository {
     }
 
     fun writeUserToDatabase(name: String, lastname: String) {
-        val user = User(auth.uid.toString(), name, lastname)
+        val user =
+            User(auth.uid.toString(), name, lastname, auth.currentUser?.phoneNumber.toString())
         databaseReference.child("users").child(user.uid).setValue(user)
     }
 
     private fun signInWithPhoneAuthCredential(credential: PhoneAuthCredential) {
         auth.signInWithCredential(credential).addOnCompleteListener { task ->
             if (task.isSuccessful) {
-                newUser.set(task.result.additionalUserInfo?.isNewUser == true)
+                databaseReference.child("users").get().addOnSuccessListener { snapshot ->
+                    val isNewUser =
+                        snapshot.children.map { it.getValue<User>()!! }.none { it.uid == auth.uid }
+                    newUser.set(isNewUser)
+                    loggedIn.set(true)
+                    Log.d("Auth", isNewUser.toString())
+                }
             } else {
                 if (task.exception is FirebaseAuthInvalidCredentialsException) {
                     wrongCode.postValue(true)

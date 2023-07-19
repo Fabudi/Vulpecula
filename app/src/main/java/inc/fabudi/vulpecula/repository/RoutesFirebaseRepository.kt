@@ -50,7 +50,6 @@ class RoutesFirebaseRepository {
             .addValueEventListener(object : ValueEventListener {
                 @RequiresApi(Build.VERSION_CODES.O)
                 override fun onDataChange(snapshot: DataSnapshot) {
-                    Log.d("Route", "From: $from")
                     val routesArray = snapshot.children
                         .map { item -> item.getValue<Route>()!!
                             .also {

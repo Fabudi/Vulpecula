@@ -45,6 +45,7 @@ class TicketsFragment : Fragment() {
             false
         )
         binding.viewModel = viewModel
+        binding.lifecycleOwner = viewLifecycleOwner
         binding.ticketsAppBarBackButton.setOnClickListener {
             (activity as MainActivity).navController.navigate(R.id.action_ticketsFragment_to_mainFragment)
         }

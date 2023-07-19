@@ -13,6 +13,7 @@
     <string name="_1">1</string>
     <string name="_2">2</string>
     <string name="_3">3</string>
+    <string name="_3more">3+</string>
     <string name="cancel">Cancel</string>
     <string name="seats">Seats</string>
     <string name="from_e_g_minsk">From, e.g. Minsk</string>
@@ -27,4 +28,11 @@
     <string name="no_archived_tickets">No archived tickets</string>
     <string name="back">Back</string>
     <string name="cancel_order">Cancel order</string>
+    <string name="statistics">Statistics</string>
+    <string name="contact_us">Contact us</string>
+    <string name="tickets">tickets</string>
+    <string name="please_login">Please, login</string>
+    <string name="confirm">Confirm</string>
+    <string name="hour">h</string>
+    <string name="minute">min</string>
 </resources>

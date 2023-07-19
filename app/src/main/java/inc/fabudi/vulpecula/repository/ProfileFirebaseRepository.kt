@@ -9,9 +9,12 @@ import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
+import com.google.i18n.phonenumbers.PhoneNumberUtil
+import com.google.i18n.phonenumbers.Phonenumber.PhoneNumber
 import inc.fabudi.vulpecula.domain.ContactInfo
 import inc.fabudi.vulpecula.domain.Ticket
 import inc.fabudi.vulpecula.domain.User
+
 
 class ProfileFirebaseRepository {
 
@@ -51,7 +54,17 @@ class ProfileFirebaseRepository {
             .addOnSuccessListener {
                 val user = it.getValue<User>()!!
                 fullName.postValue("${user.name} ${user.lastname}")
-                userPhone.postValue(Firebase.auth.currentUser?.phoneNumber)
+                var userPhoneString = Firebase.auth.currentUser?.phoneNumber.toString()
+                val phoneNumberUtil = PhoneNumberUtil.getInstance()
+                val phoneNumberPN: PhoneNumber? = phoneNumberUtil.parse(userPhoneString, "ZZ")
+                try {
+                    userPhoneString = phoneNumberUtil.format(
+                        phoneNumberPN,
+                        PhoneNumberUtil.PhoneNumberFormat.INTERNATIONAL
+                    )
+                } catch (_: Exception) {
+                }
+                userPhone.postValue(userPhoneString)
                 ticketsQuantity.postValue(user.tickets.size.toString())
                 refreshStatistics(user.tickets)
             }

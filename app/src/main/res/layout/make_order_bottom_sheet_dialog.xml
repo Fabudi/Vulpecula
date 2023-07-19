@@ -14,7 +14,8 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:background="@color/white">
 
         <ProgressBar
             android:id="@+id/order_progress_bar"
@@ -32,12 +33,12 @@
             android:layout_width="0dp"
             android:layout_height="120dp"
             android:contentDescription="@string/order_status_icon"
+            android:src="@{viewModel.successfulOrder ? ContextCompat.getDrawable(context,R.drawable.success) : ContextCompat.getDrawable(context,R.drawable.error) }"
             android:visibility="@{viewModel.orderCompleted ? View.VISIBLE : View.INVISIBLE}"
             app:layout_constraintBottom_toTopOf="@id/linearLayout"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:src="@{viewModel.successfulOrder ? ContextCompat.getDrawable(context,R.drawable.success) : ContextCompat.getDrawable(context,R.drawable.error) }" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <RadioGroup
             android:id="@+id/order_radio_group"
@@ -87,6 +88,7 @@
                 android:layout_width="150dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
+                android:background="@drawable/v_button_bg"
                 android:enabled="@{!viewModel.orderInProcess}"
                 android:text="@string/cancel" />
 
@@ -96,6 +98,7 @@
                 android:layout_width="150dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
+                android:background="@drawable/v_button_bg"
                 android:enabled="@{!viewModel.orderInProcess}"
                 android:text="@string/complete" />
         </LinearLayout>

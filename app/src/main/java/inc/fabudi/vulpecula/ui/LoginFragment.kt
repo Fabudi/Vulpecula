@@ -26,17 +26,56 @@ class LoginFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
-        if (viewModel.isLoggedIn()) {
+        if (viewModel.loggedIn.get()) {
             (activity as MainActivity).navController.navigate(R.id.action_loginFragment_to_mainFragment)
         }
         val binding: FragmentLoginBinding = DataBindingUtil.inflate(
-            inflater,
-            R.layout.fragment_login,
-            container,
-            false
+            inflater, R.layout.fragment_login, container, false
         )
         binding.lifecycleOwner = viewLifecycleOwner
         binding.viewModel = viewModel
+
+
+
+        binding.loginNext.setOnClickListener {
+            if (!viewModel.codeSent.get()) {
+                val phoneNumber = binding.loginPhoneInput.getText()
+                if (phoneNumber == "") {
+                    binding.loginPhoneInput.setError("Empty field")
+                    return@setOnClickListener
+                }
+                if (phoneNumber.length != 13) {
+                    binding.loginPhoneInput.setError("Wrong number")
+                    return@setOnClickListener
+                }
+                viewModel.login(phoneNumber)
+                return@setOnClickListener
+            }
+            if (viewModel.codeSent.get() && !viewModel.newUser.get()) {
+                viewModel.completeLogin(binding.loginCodeInput.getText())
+                if (viewModel.loggedIn.get() && !viewModel.newUser.get()) {
+                    (activity as MainActivity).navController.navigate(
+                        R.id.action_loginFragment_to_mainFragment
+                    )
+                }
+                return@setOnClickListener
+            }
+            if (viewModel.codeSent.get() && viewModel.newUser.get()) {
+                val name = binding.loginNameInput.getText()
+                val lastName = binding.loginLastnameInput.getText()
+                if (name.isEmpty()) {
+                    binding.loginNameInput.setError("Wrong number")
+                    return@setOnClickListener
+                }
+                if (lastName.isEmpty()) {
+                    binding.loginLastnameInput.setError("Wrong number")
+                    return@setOnClickListener
+                }
+                viewModel.writeUserToDatabase(name, lastName)
+                (activity as MainActivity).navController.navigate(R.id.action_loginFragment_to_mainFragment)
+                return@setOnClickListener
+            }
+        }
 
         binding.sendPhoneButton.setOnClickListener {
             val phone = binding.phoneEditText.text.toString()

@@ -48,46 +48,45 @@ class MainFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         binding = DataBindingUtil.inflate(
-            inflater,
-            R.layout.fragment_main,
-            container,
-            false
+            inflater, R.layout.fragment_main, container, false
         )
-        binding.dateEditText.setOnClickListener {
-            val constraints = CalendarConstraints.Builder()
-                .setValidator(DateValidatorPointForward.now())
-                .build()
-            val datePicker = MaterialDatePicker.Builder.datePicker()
-                .setTitleText("Select date")
+        binding.mainSwapButton.setOnClickListener {
+            val from = binding.mainFieldFrom.getText()
+            val to = binding.mainFieldTo.getText()
+            binding.mainFieldFrom.setText(to)
+            binding.mainFieldTo.setText(from)
+        }
+        binding.mainFieldDate.setOnClickListener {
+            val constraints =
+                CalendarConstraints.Builder().setValidator(DateValidatorPointForward.now()).build()
+            val datePicker = MaterialDatePicker.Builder.datePicker().setTitleText("Select date")
                 .setSelection(MaterialDatePicker.todayInUtcMilliseconds())
-                .setCalendarConstraints(constraints)
-                .build()
+                .setCalendarConstraints(constraints).build()
             datePicker.addOnPositiveButtonClickListener {
-                binding.dateEditText.setText(
+                binding.mainFieldDate.setText(
                     SimpleDateFormat(
-                        "dd.MM.yyyy",
-                        Locale.getDefault()
-                    ).format(Date(it)).toString()
+                        "dd.MM.yyyy", Locale.getDefault()
+                    ).format(Date(it))
                 )
+                binding.mainFieldDate.clearError()
             }
             datePicker.show(childFragmentManager, "datePicker")
         }
-        binding.searchButton.setOnClickListener {
-            if (binding.fromEditText.text.toString() == "") {
-                binding.fromEditText.error = "Empty input"
+        binding.mainSearchButton.setOnClickListener {
+            if (binding.mainFieldFrom.getText() == "") {
+                binding.mainFieldFrom.setError("Empty input")
                 return@setOnClickListener
             }
-            if (binding.toEditText.text.toString() == "") {
-                binding.toEditText.error = "Empty input"
+            if (binding.mainFieldTo.getText() == "") {
+                binding.mainFieldTo.setError("Empty input")
                 return@setOnClickListener
             }
-            if (binding.dateEditText.text.toString() == "") {
-                binding.dateEditText.error = "Empty input"
+            if (binding.mainFieldDate.getText() == "") {
+                binding.mainFieldDate.setError("Empty input")
                 return@setOnClickListener
             }
             viewModel.searchForDate(
-                binding.fromEditText.text.toString(),
-                binding.toEditText.text.toString()
+                binding.mainFieldFrom.getText(), binding.mainFieldTo.getText()
             )
         }
         routesViewModelAdapter = RouteAdapter(RouteClick { route ->
@@ -148,8 +147,8 @@ class MainFragment : Fragment() {
                 val adapter = ArrayAdapter(
                     requireContext(), android.R.layout.simple_dropdown_item_1line, stops
                 )
-                binding.fromEditText.setAdapter(adapter)
-                binding.toEditText.setAdapter(adapter)
+                binding.mainFieldFrom.setAdapter(adapter)
+                binding.mainFieldTo.setAdapter(adapter)
                 adapter.notifyDataSetChanged()
             }
         }
@@ -180,10 +179,6 @@ class RouteAdapter(private val callback: RouteClick) : RecyclerView.Adapter<Rout
         holder.viewDataBinding.also { binding ->
             binding.route = routes[position]
             binding.routeCallback = callback
-            binding.one = "1"
-            binding.two = "2"
-            binding.three = "3"
-            binding.more = "3+"
         }
     }
 

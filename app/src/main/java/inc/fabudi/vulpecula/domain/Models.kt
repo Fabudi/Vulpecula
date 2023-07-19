@@ -6,6 +6,7 @@ data class User(
     val uid: String = "No data",
     val name: String = "No data",
     val lastname: String = "No data",
+    val phone: String = "No data",
     val tickets: List<String> = emptyList()
 )
 
@@ -26,6 +27,7 @@ data class Ticket(
 ) {
     var departureDateTime: Date = Date()
     var arrivalDateTime: Date = Date()
+
 
     constructor(id: String, seats: Int, route: Route) : this(
         id = id,
@@ -60,6 +62,8 @@ data class Route(
 ) {
     var departureDateTime: Date = Date()
     var arrivalDateTime: Date = Date()
+
+
 }
 
 data class Stop(

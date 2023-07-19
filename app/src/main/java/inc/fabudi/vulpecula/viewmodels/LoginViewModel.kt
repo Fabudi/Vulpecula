@@ -11,8 +11,7 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
     private val repository = AuthFirebaseRepository()
     val codeSent = repository.codeSent
     val newUser = repository.newUser
-
-    fun isLoggedIn() = repository.isLoggedIn()
+    val loggedIn = repository.loggedIn
 
     fun login(phoneNumber: String) = repository.sendCodeToPhone(phoneNumber)
 

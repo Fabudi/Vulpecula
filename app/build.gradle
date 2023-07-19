@@ -47,4 +47,6 @@ dependencies {
     implementation(platform("com.google.firebase:firebase-bom:32.1.1"))
     implementation 'com.google.firebase:firebase-auth-ktx'
     implementation 'com.google.firebase:firebase-database-ktx'
+    implementation 'com.googlecode.libphonenumber:libphonenumber:7.2.2'
+    implementation 'androidx.core:core-splashscreen:1.0.1'
 }
